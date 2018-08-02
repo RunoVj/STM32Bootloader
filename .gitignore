@@ -50,3 +50,21 @@ modules.order
 Module.symvers
 Mkfile.old
 dkms.conf
+
+# MDK-ARM files
+*MDK-ARM/bootloader/*
+MDK-ARM/DebugConfig
+MDK-ARM/RTE
+MDK-ARM/*.lst
+*.Hydronautics*
+*.ярослав
+*.Yaroslav
+*.Ilya
+*.scvd
+*.mxproject
+*.Hydronautics
+*(2).*
+*.fix_comp_win10
+*.cpdsc
+# Prerequisites
+*.d
