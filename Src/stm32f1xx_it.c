@@ -267,7 +267,16 @@ void HAL_UART_RxCpltCallback(UART_HandleTypeDef *huart)
     package_started = true;
 		package_size = PACKAGE_STATIC_SIZE;
 	}
-	else if (rx_counter == REQUEST_DATA_SIZE_POS) {
+	else if (rx_counter == 1) {
+		switch (rx_byte) {
+			case 0x02:
+				package_size = CONFIG_REQUEST_LENGTH;
+			break;
+			case 0x03:
+				package_size = PACKAGE_STATIC_SIZE;
+		}
+	}
+	else if (rx_counter == REQUEST_DATA_SIZE_POS && package_size == PACKAGE_STATIC_SIZE) {
 		package_size = PACKAGE_STATIC_SIZE + rx_byte;
 	}
   

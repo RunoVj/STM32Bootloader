@@ -22,6 +22,7 @@ void jump(const uint32_t program_start_addr)
 
 void erase_flash()
 {
+	HAL_FLASH_Unlock();
 	// errase page
 	FLASH_EraseInitTypeDef errase_conf;
 	errase_conf.TypeErase = FLASH_TYPEERASE_PAGES; // errase only 1 page
@@ -31,6 +32,7 @@ void erase_flash()
 	
 	uint32_t page_error;
 	HAL_FLASHEx_Erase(&errase_conf, &page_error);
+	HAL_FLASH_Lock();
 }
 
 void shift_interrupt_vectors(uint32_t program_start_addr)
@@ -57,6 +59,7 @@ void FLASH_ReadSettings(BLDCConfig *config)
 
 void FLASH_WriteHexLine(uint8_t *data, uint32_t address, uint8_t length)
 {
+	HAL_FLASH_Unlock();
 	uint32_t *source_addr = (void *)data;
 	uint32_t *dest_addr = (uint32_t *)address;
 	
@@ -65,20 +68,7 @@ void FLASH_WriteHexLine(uint8_t *data, uint32_t address, uint8_t length)
 		source_addr++;
 		dest_addr++;
 	}
-}
-
-void FLASH_WriteWord(uint32_t word, uint32_t address)
-{
-	uint32_t *source_addr = (void *)&word;
-	uint32_t *dest_addr = (uint32_t *)address;
-	HAL_FLASH_Program(FLASH_TYPEPROGRAM_HALFWORD, (uint32_t)dest_addr, *source_addr);
-}
-
-void FLASH_WriteHalfWord(uint16_t halfword, uint32_t address)
-{
-	uint32_t *source_addr = (void *)&halfword;
-	uint32_t *dest_addr = (uint32_t *)address;
-	HAL_FLASH_Program(FLASH_TYPEPROGRAM_HALFWORD, (uint32_t)dest_addr, *source_addr);
+	HAL_FLASH_Lock();
 }
 
 void FLASH_WriteSettings(BLDCConfig *config)

@@ -34,8 +34,6 @@ extern BLDCConfig config;
 void FLASH_ReadSettings(BLDCConfig *config);
 void FLASH_WriteSettings(BLDCConfig *config);
 void FLASH_WriteHexLine(uint8_t *data, uint32_t address, uint8_t length);
-void FLASH_WriteHalfWord(uint16_t halfword, uint32_t address);
-void FLASH_WriteWord(uint32_t halfword, uint32_t address);
 
 void erase_flash(void);
 	

@@ -106,7 +106,6 @@ int main(void)
 		jump(APPLICATION_ADDR); 
 	}
 	
-	HAL_FLASH_Unlock();
 	erase_flash();
   /* USER CODE END 2 */
 
