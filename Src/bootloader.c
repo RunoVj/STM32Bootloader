@@ -16,7 +16,6 @@ void jump(const uint32_t program_start_addr)
 	__set_MSP(*(__IO uint32_t*) program_start_addr); // set main stack pointer  
 	
 	// go to new program
-//	shift_interrupt_vectors(program_start_addr);
 	program_func();		      	
 }
 
