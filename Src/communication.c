@@ -53,13 +53,13 @@ bool parse_config_request(struct ConfigRequest *req)
 bool parse_package(uint8_t *msg, uint8_t length)
 {
 	if (IsChecksumm8bCorrect(msg, length)) {
-		if (length != CONFIG_REQUEST_LENGTH) {
+		if (msg[1] == FIRMWARE_REQUEST_TYPE) {
 			struct FirmwaregRequest req;
 			memcpy((void*)&req, (void*)msg, 9);
 			memcpy((void*)&req, (void*)msg, req.hex._data_size + 9);
 			return parse_firmware_package(&req);
 		}
-		else {
+		else if (msg[1] == CONFIG_REQUEST_TYPE) {
 			struct ConfigRequest req;
 			memcpy((void*)&req, (void*)msg, length);
 			return parse_config_request(&req);			

@@ -4,7 +4,7 @@
 /* STM send requests and VMA send responses */
 
 #define REQUEST_LENGTH   12  
-#define CONFIG_REQUEST_LENGTH  7
+#define CONFIG_REQUEST_LENGTH  13
 #define RESPONSE_LENGTH  5
 #define PACKAGE_STATIC_SIZE 11
 #define RECEIVE_TIMEOUT  5
@@ -47,6 +47,9 @@ struct ConfigRequest
     uint8_t forse_setting; // (bool) set new address even if old address doesn't equal BLDC address
     uint8_t old_address;
     uint8_t new_address;
+    uint16_t high_threshold;
+    uint16_t low_threshold;
+    uint16_t average_threshold;
     uint8_t crc;
 };
 
