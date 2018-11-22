@@ -265,7 +265,7 @@ void HAL_UART_RxCpltCallback(UART_HandleTypeDef *huart)
 {
 	if (rx_counter == 0) {
     package_started = true;
-		package_size = PACKAGE_STATIC_SIZE;
+		package_size = FIRMWARE_STATIC_SIZE;
 	}
 	else if (rx_counter == 1) {
 		switch (rx_byte) {
@@ -273,11 +273,11 @@ void HAL_UART_RxCpltCallback(UART_HandleTypeDef *huart)
 				package_size = CONFIG_REQUEST_LENGTH;
 			break;
 			case 0x03:
-				package_size = PACKAGE_STATIC_SIZE;
+				package_size = FIRMWARE_STATIC_SIZE;
 		}
 	}
-	else if (rx_counter == REQUEST_DATA_SIZE_POS && package_size == PACKAGE_STATIC_SIZE) {
-		package_size = PACKAGE_STATIC_SIZE + rx_byte;
+	else if (rx_counter == REQUEST_DATA_SIZE_POS && package_size == FIRMWARE_STATIC_SIZE) {
+		package_size = FIRMWARE_STATIC_SIZE + rx_byte;
 	}
   
 	receive_buf[rx_counter++] = rx_byte;

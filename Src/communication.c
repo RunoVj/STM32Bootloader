@@ -7,7 +7,7 @@
 #include "checksum.h"
 #include "bootloader.h"
 
-uint8_t msg_buf[RESPONSE_LENGTH];
+uint8_t msg_buf[FIRMWARE_RESPONSE_LENGTH];
 
 uint32_t flash_address = 0;
 
@@ -76,10 +76,10 @@ void response(uint8_t status)
 	resp.address = config.address;
 	resp.status = status;
 
-	memcpy((void*)msg_buf, (void*)&resp, RESPONSE_LENGTH - 1);
-	AddChecksumm8b(msg_buf, RESPONSE_LENGTH);	
+	memcpy((void*)msg_buf, (void*)&resp, FIRMWARE_RESPONSE_LENGTH - 1);
+	AddChecksumm8b(msg_buf, FIRMWARE_RESPONSE_LENGTH);	
 
   HAL_GPIO_WritePin(RS485_DIR_GPIO_Port, RS485_DIR_Pin, GPIO_PIN_SET);
 	
-  HAL_UART_Transmit_IT(&huart1, msg_buf, RESPONSE_LENGTH);	
+  HAL_UART_Transmit_IT(&huart1, msg_buf, FIRMWARE_RESPONSE_LENGTH);	
 }
