@@ -5,7 +5,9 @@
 
 /* STM send requests and VMA send responses */
 
-#define RECEIVE_TIMEOUT                     6
+#define BOOTLOADER_MODE_ID									0xBB
+
+#define RECEIVE_TIMEOUT                     7
 
 #define NORMAL_REQUEST_TYPE                 0x01
 #define TERMINAL_REQUEST_TYPE               0x02
@@ -17,10 +19,12 @@
 #define TERMINAL_REQUEST_LENGTH             15
 #define TERMINAL_RESPONSE_LENGTH            16
 #define CONFIG_REQUEST_LENGTH               18
-#define FIRMWARE_RESPONSE_LENGTH            5
-#define FIRMWARE_STATIC_SIZE                11
+#define FIRMWARE_RESPONSE_LENGTH            7
 
-#define REQUEST_DATA_SIZE_POS               5
+#define REQUEST_DATA_SIZE_POS_OFFSET        11
+#define FIRMWARE_STATIC_SIZE                13
+
+#define REQUEST_DATA_SIZE_POS               7
 #define MAX_DATA_SIZE                       0x10
 
 #define ADDRESS_OFFSET_TYPE                 0x04
@@ -41,6 +45,22 @@ struct Request
 	int8_t velocity;
 	uint8_t frequency;
 	int16_t outrunning_angle;
+	uint8_t crc;
+};
+
+struct TerminalRequest
+{
+	uint8_t AA;
+	uint8_t type; // 0x02
+	uint8_t address;
+	uint8_t update_base_vector; // true or false
+	uint8_t position_setting; // enabling of position_setting
+	uint16_t angle; // angle - 0..359;
+	int8_t velocity;
+	uint8_t frequency;
+	int16_t outrunning_angle;
+	uint8_t update_speed_k; // if false thruster will use previous values from flash
+	uint16_t speed_k;
 	uint8_t crc;
 };
 
@@ -78,34 +98,36 @@ struct ConfigRequest
 
 typedef struct 
 {
-		uint8_t _data_size;
-		uint16_t start_address;
-		uint8_t operation_type;
-		uint8_t data[MAX_DATA_SIZE];
-		uint8_t crc;
+	uint8_t _data_size;
+	uint16_t start_address;
+	uint8_t operation_type;
+	uint8_t data[MAX_DATA_SIZE];
+	uint8_t crc;
 } IntelHEX;
 
 struct FirmwaregRequest
 {
-    uint8_t AA;
-    uint8_t type; // 0x03
-    uint8_t address;
-	  uint8_t force_update; // update even if address doesn't equal BLDC address
-    uint8_t get_response; // send status
-    //hex
+	uint8_t AA;
+	uint8_t type; // 0x03
+	uint8_t address;
+	uint8_t force_update; // update even if address doesn't equal BLDC address
+	uint8_t get_response; // send status
+	uint16_t index;
+	//hex
 
-    IntelHEX hex;
+	IntelHEX hex;
 
-    uint8_t crc;
+	uint8_t crc;
 };
 
 struct FirmwareResponse
 {
-    uint8_t AA;
-    uint8_t type; // 0x03
-    uint8_t address;
-    uint8_t status;
-    uint8_t crc;
+	uint8_t AA;
+	uint8_t type; // 0x03
+	uint8_t address;
+	uint8_t status;
+	uint16_t index;
+	uint8_t crc;
 };
 
 

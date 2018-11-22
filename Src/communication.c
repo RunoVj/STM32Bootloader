@@ -8,12 +8,30 @@
 #include "bootloader.h"
 
 uint8_t msg_buf[FIRMWARE_RESPONSE_LENGTH];
+uint16_t pack_index;
 
 uint32_t flash_address = 0;
+
+bool parse_normal_request(struct Request *req)
+{
+	if (req->address == config.address) {
+		return true;
+	}
+	return false;
+}
+
+bool parse_terminal_request(struct TerminalRequest *req)
+{
+	if (req->address == config.address) {
+		return true;
+	}	
+	return false;	
+};
 
 bool parse_firmware_package(struct FirmwaregRequest *req)
 {
 	if (req->address == config.address || req->force_update) {
+		pack_index = req->index;
 		switch (req->hex.operation_type) {
 			case WRITE_HEX:
 				flash_address = (flash_address & 0xFFFF0000) | req->hex.start_address;
@@ -53,18 +71,34 @@ bool parse_config_request(struct ConfigRequest *req)
 bool parse_package(uint8_t *msg, uint8_t length)
 {
 	if (IsChecksumm8bCorrect(msg, length)) {
-		if (msg[1] == FIRMWARE_REQUEST_TYPE) {
-			struct FirmwaregRequest req;
-			memcpy((void*)&req, (void*)msg, 9);
-			memcpy((void*)&req, (void*)msg, req.hex._data_size + 9);
-			return parse_firmware_package(&req);
+		switch (msg[1]) {
+			case NORMAL_REQUEST_TYPE: {
+				struct Request req;
+				memcpy((void*)&req, (void*)msg, length);
+				return parse_normal_request(&req);
+			}
+			
+			case TERMINAL_REQUEST_TYPE: {
+				struct TerminalRequest req;
+				memcpy((void*)&req, (void*)msg, length);
+				return parse_terminal_request(&req);
+			}
+			
+			case CONFIG_REQUEST_TYPE: {
+				struct ConfigRequest req;
+				memcpy((void*)&req, (void*)msg, length);
+				return parse_config_request(&req);
+			}
+			
+			case FIRMWARE_REQUEST_TYPE: {
+				struct FirmwaregRequest req;
+				memcpy((void*)&req, (void*)msg, REQUEST_DATA_SIZE_POS_OFFSET);
+				memcpy((void*)&req, (void*)msg, req.hex._data_size
+					+ REQUEST_DATA_SIZE_POS_OFFSET);
+				return parse_firmware_package(&req);
+			}
 		}
-		else if (msg[1] == CONFIG_REQUEST_TYPE) {
-			struct ConfigRequest req;
-			memcpy((void*)&req, (void*)msg, length);
-			return parse_config_request(&req);			
-		}
-  }
+	}
 	return false;	
 }
 
@@ -75,6 +109,7 @@ void response(uint8_t status)
 	resp.type = FIRMWARE_REQUEST_TYPE;
 	resp.address = config.address;
 	resp.status = status;
+	resp.index = pack_index;
 
 	memcpy((void*)msg_buf, (void*)&resp, FIRMWARE_RESPONSE_LENGTH - 1);
 	AddChecksumm8b(msg_buf, FIRMWARE_RESPONSE_LENGTH);	

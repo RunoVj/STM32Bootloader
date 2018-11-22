@@ -206,7 +206,7 @@ void SysTick_Handler(void)
 				package_received = false;          
 				bool parsing_is_ok = parse_package(receive_buf, package_size);
 				if (package_sended && parsing_is_ok){
-					response(0xFF); 
+					response(BOOTLOADER_MODE_ID); 
 				} 				
 			}
 			rx_counter = 0;
@@ -265,15 +265,24 @@ void HAL_UART_RxCpltCallback(UART_HandleTypeDef *huart)
 {
 	if (rx_counter == 0) {
     package_started = true;
-		package_size = FIRMWARE_STATIC_SIZE;
 	}
 	else if (rx_counter == 1) {
 		switch (rx_byte) {
-			case 0x02:
+			case NORMAL_REQUEST_TYPE:
+				package_size = NORMAL_REQUEST_LENGTH;
+			break;
+			
+			case TERMINAL_REQUEST_TYPE:
+				package_size = TERMINAL_REQUEST_LENGTH;
+			break;
+			
+			case CONFIG_REQUEST_TYPE:
 				package_size = CONFIG_REQUEST_LENGTH;
 			break;
-			case 0x03:
+			
+			case FIRMWARE_REQUEST_TYPE:
 				package_size = FIRMWARE_STATIC_SIZE;
+			break;
 		}
 	}
 	else if (rx_counter == REQUEST_DATA_SIZE_POS && package_size == FIRMWARE_STATIC_SIZE) {
