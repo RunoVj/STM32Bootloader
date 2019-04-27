@@ -202,10 +202,10 @@ void SysTick_Handler(void)
 		if (communication_counter == RECEIVE_TIMEOUT) {
 			communication_counter = 0;
 			
-			if (package_received){
+			if (package_received) {
 				package_received = false;          
 				bool parsing_is_ok = parse_package(receive_buf, package_size);
-				if (package_sended && parsing_is_ok){
+				if (package_sended && parsing_is_ok) {
 					response(BOOTLOADER_MODE_ID); 
 				} 				
 			}
